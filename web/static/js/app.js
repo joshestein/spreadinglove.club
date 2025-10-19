@@ -4,7 +4,7 @@ async function fetchMessage() {
   $message.textContent = "Loading...";
 
   try {
-    const response = await fetch();
+    const response = await fetch("/api/message");
     if (!response.ok) {
       throw new Error("Failed to fetch message");
     }
