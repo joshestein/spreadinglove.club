@@ -20,16 +20,16 @@ jobs:
 
     - name: Build Go application
       run: |
-        GOOS=linux GOARCH=amd64 go build -o spreadinglove .
-        chmod +x spreadinglove
+        GOOS=linux GOARCH=amd64 go build -o spreadlove .
+        chmod +x spreadlove
       env:
         CGO_ENABLED: 0
 
     - name: Upload artifact (binary)
       uses: actions/upload-artifact@v4
       with:
-        name: spreadinglove
-        path: spreadinglove
+        name: spreadlove
+        path: spreadlove
 
   deploy:
     needs: build
@@ -40,7 +40,7 @@ jobs:
     - name: Download artifact
       uses: actions/download-artifact@v4
       with:
-        name: spreadinglove
+        name: spreadlove
         path: .
 
     - name: Deploy binary to VPS using rsync
@@ -48,8 +48,8 @@ jobs:
       with:
         ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
         args: "-zv --delete"
-        source: "spreadinglove"
-        target: /home/${{ secrets.VPS_USER }}/spreadinglove
+        source: "spreadlove"
+        target: /home/${{ secrets.VPS_USER }}/spreadlove
         remote_host: ${{ secrets.VPS_HOST }}
         remote_user: ${{ secrets.VPS_USER }}
 
@@ -61,4 +61,4 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
           # Ensure the user used for SSH has NOPASSWD for this specific command in /etc/sudoers.d/
-          sudo systemctl restart spreadinglove.service
+          sudo systemctl restart spreadlove.service
