@@ -52,6 +52,10 @@ jobs:
         target: /home/${{ secrets.VPS_USER }}/spreadlove
         remote_host: ${{ secrets.VPS_HOST }}
         remote_user: ${{ secrets.VPS_USER }}
+        script_before: |
+          mkdir -p /home/${{ secrets.VPS_USER }}/spreadlove
+        script_after: |
+          chmod +x /home/${{ secrets.VPS_USER }}/spreadlove/spreadlove
 
     - name: Restart Go service on VPS
       uses: appleboy/ssh-action@v1.0.3
