@@ -1,0 +1,63 @@
+name: Deploy Go Backend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v5
+
+    - name: Set up Go
+      uses: actions/setup-go@v6
+      with:
+        go-version: '1.25.1'
+
+    - name: Build Go application
+      run: |
+        GOOS=linux GOARCH=amd64 go build -o spreadinglove .
+        chmod +x spreadinglove
+      env:
+        CGO_ENABLED: 0
+
+    - name: Upload artifact (binary)
+      uses: actions/upload-artifact@v4
+      with:
+        name: spreadinglove
+        path: spreadinglove
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: spreadinglove
+        path: .
+
+    - name: Deploy binary to VPS using rsync
+      uses: easingthemes/ssh-deploy@main
+      with:
+        ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: "spreadinglove"
+        target: "/opt/spreadinglove/"
+        remote_host: ${{ secrets.VPS_HOST }}
+        remote_user: ${{ secrets.VPS_USER }}
+
+    - name: Restart Go service on VPS
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          # Ensure the user used for SSH has NOPASSWD for this specific command in /etc/sudoers.d/
+          sudo systemctl restart spreadinglove.service
