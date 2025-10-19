@@ -28,6 +28,12 @@ type App struct {
 	queries *db.Queries
 }
 
+type MessageResponse struct {
+	ID        int64     `json:"id"`
+	Content   string    `json:"content"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
 func main() {
 	app := &App{}
 
@@ -50,9 +56,7 @@ func main() {
 	// processing should be stopped.
 	r.Use(middleware.Timeout(60 * time.Second))
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("bye"))
-	})
+	r.Get("/", app.handleGetRandomMessage)
 
 	server := &http.Server{
 		Addr:    ":3000",
@@ -94,4 +98,26 @@ func (app *App) setupDB() error {
 	// Setup DB from `schema.sql`
 	_, err = database.Exec(schemaSQL)
 	return err
+}
+
+func (app *App) handleGetRandomMessage(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	msg, err := app.queries.GetRandomMessage(ctx)
+
+	if err != nil {
+		log.Printf("Error fetching random message: %v", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	response := MessageResponse{
+		ID:      msg.ID,
+		Content: msg.Content,
+	}
+
+	if msg.CreatedAt.Valid {
+		response.CreatedAt = msg.CreatedAt.Time
+	}
+
+	render.JSON(w, r, response)
 }
