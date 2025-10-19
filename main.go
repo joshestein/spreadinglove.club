@@ -47,10 +47,13 @@ func main() {
 	// Block
 	<-quit
 	log.Println("Shutdown Server ...")
+
 	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
 	if err := server.Shutdown(shutdownCtx); err != nil {
 		log.Println("Server Shutdown:", err)
 	}
+
 	log.Println("Server exiting")
 }
