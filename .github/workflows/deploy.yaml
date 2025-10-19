@@ -47,8 +47,9 @@ jobs:
       uses: easingthemes/ssh-deploy@main
       with:
         ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+        args: "-zv --delete"
         source: "spreadinglove"
-        target: "/opt/spreadinglove/"
+        target: /home/${{ secrets.VPS_USER }}/spreadinglove
         remote_host: ${{ secrets.VPS_HOST }}
         remote_user: ${{ secrets.VPS_USER }}
 
