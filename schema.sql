@@ -10,3 +10,6 @@ CREATE TABLE IF NOT EXISTS pending_messages (
     status TEXT DEFAULT 'pending' CHECK(status IN ('pending', 'approved', 'rejected')),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+INSERT OR IGNORE INTO messages (content)
+VALUES ("Thank you for being you today."), ("You are worthy just as you are."), ("You are enough.")
