@@ -56,7 +56,14 @@ func main() {
 	// processing should be stopped.
 	r.Use(middleware.Timeout(60 * time.Second))
 
-	r.Get("/", app.handleGetRandomMessage)
+	fileServer := http.FileServer(http.Dir("./web/static"))
+	r.Handle("/static/*", http.StripPrefix("/static/", fileServer))
+
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./web/index.html")
+	})
+
+	r.Get("/api/message", app.handleGetRandomMessage)
 
 	server := &http.Server{
 		Addr:    ":3000",
