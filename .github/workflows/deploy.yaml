@@ -10,26 +10,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v5
+      - name: Checkout code
+        uses: actions/checkout@v5
 
-    - name: Set up Go
-      uses: actions/setup-go@v6
-      with:
-        go-version: '1.25.1'
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.25.1"
 
-    - name: Build Go application
-      run: |
-        GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -o spreadlove .
-        chmod +x spreadlove
-      env:
-        CGO_ENABLED: 0
+      - name: Build Go application
+        run: |
+          GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -o spreadlove .
+          chmod +x spreadlove
+        env:
+          CGO_ENABLED: 0
 
-    - name: Upload artifact (binary)
-      uses: actions/upload-artifact@v4
-      with:
-        name: spreadlove
-        path: spreadlove
+      - name: Upload artifact (binary)
+        uses: actions/upload-artifact@v4
+        with:
+          name: spreadlove
+          path: spreadlove
 
   deploy:
     needs: build
@@ -37,32 +37,32 @@ jobs:
     environment: production
 
     steps:
-    - name: Download artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: spreadlove
-        path: .
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: spreadlove
+          path: .
 
-    - name: Deploy binary to VPS using rsync
-      uses: easingthemes/ssh-deploy@main
-      with:
-        ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
-        args: "-zv --delete"
-        source: "spreadlove"
-        target: /home/${{ secrets.VPS_USER }}/spreadlove
-        remote_host: ${{ secrets.VPS_HOST }}
-        remote_user: ${{ secrets.VPS_USER }}
-        script_before: |
-          mkdir -p /home/${{ secrets.VPS_USER }}/spreadlove
-        script_after: |
-          chmod +x /home/${{ secrets.VPS_USER }}/spreadlove/spreadlove
+      - name: Deploy binary to VPS using rsync
+        uses: easingthemes/ssh-deploy@main
+        with:
+          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          args: "-zv --delete"
+          source: "spreadlove"
+          target: /home/${{ secrets.VPS_USER }}/spreadlove
+          remote_host: ${{ secrets.VPS_HOST }}
+          remote_user: ${{ secrets.VPS_USER }}
+          script_before: |
+            mkdir -p /home/${{ secrets.VPS_USER }}/spreadlove
+          script_after: |
+            chmod +x /home/${{ secrets.VPS_USER }}/spreadlove/spreadlove
 
-    - name: Restart Go service on VPS
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          # Ensure the user used for SSH has NOPASSWD for this specific command in /etc/sudoers.d/
-          sudo systemctl restart spreadlove.service
+      - name: Restart Go service on VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Ensure the user used for SSH has NOPASSWD for this specific command in /etc/sudoers.d/
+            sudo systemctl restart spreadlove.service
