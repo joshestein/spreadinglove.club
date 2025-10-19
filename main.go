@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	_ "embed"
 	"log"
 	"net/http"
 	"os"
@@ -9,11 +11,31 @@ import (
 	"syscall"
 	"time"
 
+	_ "github.com/mattn/go-sqlite3"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+
+	"spreadlove/db"
 )
 
+//go:embed schema.sql
+var schemaSQL string
+
+type App struct {
+	db      *sql.DB
+	queries *db.Queries
+}
+
 func main() {
+	app := &App{}
+
+	if err := app.setupDB(); err != nil {
+		log.Fatal("Failed to setup database:", err)
+	}
+
+	defer app.db.Close()
+
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -56,4 +78,18 @@ func main() {
 	}
 
 	log.Println("Server exiting")
+}
+
+func (app *App) setupDB() error {
+	database, err := sql.Open("sqlite3", "./love.db")
+	if err != nil {
+		return err
+	}
+
+	app.db = database
+	app.queries = db.New(database)
+
+	// Setup DB from `schema.sql`
+	_, err = database.Exec(schemaSQL)
+	return err
 }
