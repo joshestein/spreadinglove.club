@@ -1,4 +1,4 @@
-module spreadinglove
+module spreadlove
 
 go 1.24.6
 
