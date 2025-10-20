@@ -68,4 +68,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             # Ensure the user used for SSH has NOPASSWD for this specific command in /etc/sudoers.d/
+            # You can `sudo EDITOR=vim visudo`
+            # Then add a line like:
+            # vps_user ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart spreadlove.service
             sudo systemctl restart spreadlove.service
