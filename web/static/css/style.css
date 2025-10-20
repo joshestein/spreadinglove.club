@@ -34,7 +34,16 @@ body {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  text-decoration: none;
+
+  a {
+    font: 1em sans-serif;
+    color: #ac4518;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
 form {
