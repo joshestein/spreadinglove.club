@@ -22,14 +22,17 @@ jobs:
         run: |
           GOOS=linux GOARCH=amd64 CGO_ENABLED=1 go build -o spreadlove .
           chmod +x spreadlove
+          mkdir -p dist
+          mv spreadlove dist/
+          cp -r web dist/
         env:
           CGO_ENABLED: 0
 
-      - name: Upload artifact (binary)
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: spreadlove
-          path: spreadlove
+          name: spreadlove-dist
+          path: dist/
 
   deploy:
     needs: build
@@ -40,15 +43,15 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: spreadlove
+          name: spreadlove-dist
           path: .
 
-      - name: Deploy binary to VPS using rsync
+      - name: Deploy to VPS using rsync
         uses: easingthemes/ssh-deploy@main
         with:
           ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
           args: "-zv --delete"
-          source: "spreadlove"
+          source: "."
           target: /home/${{ secrets.VPS_USER }}/spreadlove
           remote_host: ${{ secrets.VPS_HOST }}
           remote_user: ${{ secrets.VPS_USER }}
