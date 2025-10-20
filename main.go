@@ -63,6 +63,10 @@ func main() {
 		http.ServeFile(w, r, "./web/index.html")
 	})
 
+	r.Get("/submit", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./web/submit.html")
+	})
+
 	r.Get("/api/message", app.handleGetRandomMessage)
 
 	port := "3000"

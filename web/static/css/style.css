@@ -36,3 +36,24 @@ body {
   justify-content: space-between;
   text-decoration: none;
 }
+
+form {
+  height: 100svh;
+  gap: 1em;
+  border-radius: 4px;
+
+  textarea {
+    font: 1em sans-serif;
+    width: 90%;
+    height: 150px;
+  }
+
+  button {
+    font: 1.5em sans-serif;
+    /* Match the font styling of the textarea */
+    padding: 0.2em 1em;
+    border: 1px solid #ccc;
+    background: #eee;
+    cursor: pointer;
+  }
+}
