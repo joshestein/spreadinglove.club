@@ -25,3 +25,14 @@ body {
   justify-content: center;
   text-align: center;
 }
+
+.nav {
+  width: 100%;
+  position: absolute;
+  bottom: 40px;
+  padding: 0 40px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  text-decoration: none;
+}
