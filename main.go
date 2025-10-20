@@ -66,6 +66,8 @@ func main() {
 		http.ServeFile(w, r, "./web/submit.html")
 	})
 
+	r.Post("/submit", app.handleSubmitMessage)
+
 	r.Route("/api", func(r chi.Router) {
 		r.Use(render.SetContentType(render.ContentTypeJSON))
 		r.Get("/message", app.handleGetRandomMessage)
@@ -138,4 +140,27 @@ func (app *App) handleGetRandomMessage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.JSON(w, r, response)
+}
+
+func (app *App) handleSubmitMessage(w http.ResponseWriter, r *http.Request) {
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Failed to parse form", http.StatusBadRequest)
+		return
+	}
+	content := r.FormValue("content")
+	if content == "" {
+		http.Error(w, "Message content cannot be empty", http.StatusBadRequest)
+		return
+	}
+
+	ctx := r.Context()
+	_, err := app.queries.CreatePendingMessage(ctx, content)
+
+	if err != nil {
+		log.Printf("Error submitting message message: %v", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
