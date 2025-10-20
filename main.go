@@ -65,8 +65,13 @@ func main() {
 
 	r.Get("/api/message", app.handleGetRandomMessage)
 
+	port := "3000"
+	if os.Getenv("PORT") != "" {
+		port = os.Getenv("PORT")
+	}
+
 	server := &http.Server{
-		Addr:    ":3000",
+		Addr:    ":" + port,
 		Handler: r,
 	}
 
