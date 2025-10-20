@@ -11,5 +11,7 @@ CREATE TABLE IF NOT EXISTS pending_messages (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT OR IGNORE INTO messages (content)
-VALUES ("Thank you for being you today."), ("You are worthy just as you are."), ("You are enough.")
+INSERT OR IGNORE INTO messages (id, content) VALUES 
+    (1, 'Thank you for being you today.'),
+    (2, 'You are worthy just as you are.'),
+    (3, 'You are enough.');
