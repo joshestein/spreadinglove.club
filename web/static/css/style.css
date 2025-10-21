@@ -26,6 +26,13 @@ body {
   text-align: center;
 }
 
+button#refresh {
+  background: transparent;
+  border: none;
+  color: #4b4b4b;
+  margin-top: 1rem;
+}
+
 .nav {
   width: 100%;
   position: absolute;

@@ -1,4 +1,5 @@
 const $message = document.getElementById('message');
+const $refreshButton = document.getElementById('refresh');
 
 async function fetchMessage() {
   $message.textContent = 'Loading...';
@@ -15,5 +16,7 @@ async function fetchMessage() {
     $message.textContent = 'You are perfect as you are.';
   }
 }
+
+$refreshButton.addEventListener('click', fetchMessage);
 
 fetchMessage();
