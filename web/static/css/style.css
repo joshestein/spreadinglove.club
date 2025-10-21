@@ -53,6 +53,16 @@ button#refresh {
   }
 }
 
+h1 {
+  color: #ac4518;
+}
+
+p {
+  font-size: 1.5em;
+  color: #ac4518;
+  padding-inline: 10px;
+}
+
 form {
   height: 100svh;
   gap: 1em;
