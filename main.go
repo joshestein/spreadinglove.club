@@ -66,11 +66,9 @@ func main() {
 		http.ServeFile(w, r, "./web/submit.html")
 	})
 
-	r.Post("/submit", app.handleSubmitMessage)
-
 	r.Route("/api", func(r chi.Router) {
-		r.Use(render.SetContentType(render.ContentTypeJSON))
 		r.Get("/message", app.handleGetRandomMessage)
+		r.Post("/message", app.handleSubmitMessage)
 	})
 
 	port := "3000"
