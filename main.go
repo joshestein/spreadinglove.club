@@ -24,7 +24,6 @@ import (
 var schemaSQL string
 
 type App struct {
-	db      *sql.DB
 	queries *db.Queries
 }
 
@@ -37,11 +36,12 @@ type MessageResponse struct {
 func main() {
 	app := &App{}
 
-	if err := app.setupDB(); err != nil {
+	db, err := app.setupDB()
+	if err != nil {
 		log.Fatal("Failed to setup database:", err)
 	}
 
-	defer app.db.Close()
+	defer db.Close()
 
 	r := chi.NewRouter()
 
@@ -106,18 +106,17 @@ func main() {
 	log.Println("Server exiting")
 }
 
-func (app *App) setupDB() error {
+func (app *App) setupDB() (*sql.DB, error) {
 	database, err := sql.Open("sqlite3", "./love.db")
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	app.db = database
 	app.queries = db.New(database)
 
 	// Setup DB from `schema.sql`
 	_, err = database.Exec(schemaSQL)
-	return err
+	return database, err
 }
 
 func (app *App) handleGetRandomMessage(w http.ResponseWriter, r *http.Request) {
