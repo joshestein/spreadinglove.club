@@ -121,6 +121,8 @@ func (app *App) handleGetRandomMessage(w http.ResponseWriter, r *http.Request) {
 		response.CreatedAt = msg.CreatedAt.Time
 	}
 
+	w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
+
 	render.JSON(w, r, response)
 }
 
