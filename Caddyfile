@@ -3,9 +3,10 @@ http://localhost:8080 {
 		level DEBUG
 	}
 	root * ./web
-	try_files {path} {path}.html {path}/index.html
-
-	file_server
 	reverse_proxy /api/* localhost:3000
+
+	try_files {path} {path}.html {path}/index.html
+	file_server
+
 	encode
 }
