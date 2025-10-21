@@ -49,12 +49,14 @@ body {
 form {
   height: 100svh;
   gap: 1em;
-  border-radius: 4px;
 
   textarea {
-    font: 1em sans-serif;
-    width: 90%;
+    margin-inline: auto;
+    font: 1.5em sans-serif;
+    width: 80ch;
+    max-width: 90svw;
     height: 150px;
+    border-radius: 4px;
   }
 
   button {
@@ -64,5 +66,6 @@ form {
     border: 1px solid #ccc;
     background: #eee;
     cursor: pointer;
+    border-radius: 4px;
   }
 }
