@@ -57,6 +57,8 @@ form {
     max-width: 90svw;
     height: 150px;
     border-radius: 4px;
+    border: 15px solid transparent;
+    outline: 1px solid #dadcde;
   }
 
   button {
