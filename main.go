@@ -49,35 +49,20 @@ func main() {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
+	r.Use(render.SetContentType(render.ContentTypeJSON))
 
 	// Set a timeout value on the request context (ctx), that will signal
 	// through ctx.Done() that the request has timed out and further
 	// processing should be stopped.
 	r.Use(middleware.Timeout(60 * time.Second))
 
-	fileServer := http.FileServer(http.Dir("./web/static"))
-	r.Handle("/static/*", http.StripPrefix("/static/", fileServer))
-
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./web/index.html")
-	})
-
-	r.Get("/submit", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "./web/submit.html")
-	})
-
 	r.Route("/api", func(r chi.Router) {
 		r.Get("/message", app.handleGetRandomMessage)
 		r.Post("/message", app.handleSubmitMessage)
 	})
 
-	port := "3000"
-	if os.Getenv("PORT") != "" {
-		port = os.Getenv("PORT")
-	}
-
 	server := &http.Server{
-		Addr:    ":" + port,
+		Addr:    ":3000",
 		Handler: r,
 	}
 
