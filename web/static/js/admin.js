@@ -106,6 +106,36 @@ function displayMessages(messages) {
     .join("");
 }
 
+async function approveMessage(id) {
+  try {
+    await authenticatedFetch(`/api/admin/approve/${id}`, {
+      method: "POST",
+    });
+    const element = document.getElementById(`message-${id}`);
+    element.style.opacity = "0";
+    setTimeout(() => element.remove(), 300);
+  } catch (error) {
+    console.error("Error approving message:", error);
+    alert("Failed to approve message. Please try again.");
+    return;
+  }
+}
+
+async function rejectMessage(id) {
+  try {
+    await authenticatedFetch(`/api/admin/reject/${id}`, {
+      method: "POST",
+    });
+    const element = document.getElementById(`message-${id}`);
+    element.style.opacity = "0";
+    setTimeout(() => element.remove(), 300);
+  } catch (error) {
+    console.error("Error rejecting message:", error);
+    alert("Failed to approve message. Please try again.");
+    return;
+  }
+}
+
 function escapeHtml(unsafe) {
   return unsafe
     .replace(/&/g, "&amp;")
