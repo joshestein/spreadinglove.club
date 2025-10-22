@@ -48,3 +48,28 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
     loginButton.textContent = "Login";
   }
 });
+
+async function loadPendingMessages() {
+  try {
+    const response = await fetch("/api/admin/pending", {
+      headers: {
+        Authorization: "Basic " + credentials,
+      },
+    });
+
+    if (response.status === 401) {
+      throw new Error("Unauthorized");
+    }
+
+    if (!response.ok) {
+      throw new Error("Failed to load messages");
+    }
+
+    const messages = await response.json();
+    // displayMessages(messages);
+  } catch (error) {
+    console.error("Error loading messages:", error);
+    document.getElementById("pending-list").innerHTML =
+      '<div class="error">Failed to load messages</div>';
+  }
+}
