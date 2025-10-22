@@ -35,10 +35,8 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
     document.getElementById("login-form").classList.add("hidden");
     document.getElementById("admin-app").classList.remove("hidden");
 
-    // Load messages
     const messages = await response.json();
-    console.log(messages);
-    // displayMessages(messages);
+    displayMessages(messages);
   } catch (error) {
     credentials = null;
     loginError.textContent =
@@ -68,10 +66,55 @@ async function loadPendingMessages() {
     }
 
     const messages = await response.json();
-    // displayMessages(messages);
+    displayMessages(messages);
   } catch (error) {
     console.error("Error loading messages:", error);
     document.getElementById("pending-list").innerHTML =
       '<div class="error">Failed to load messages</div>';
   }
+}
+
+function displayMessages(messages) {
+  const container = document.getElementById("pending-list");
+
+  if (messages.length === 0) {
+    container.innerHTML = '<div class="empty">No pending messages</div>';
+    return;
+  }
+
+  container.innerHTML = messages
+    .map(
+      (msg) => `
+                <div class="message-card" id="message-${msg.id}">
+                    <div class="message-content">${escapeHtml(
+                      msg.content
+                    )}</div>
+                    <div class="message-date">
+                        ${new Date(msg.created_at).toLocaleString()}
+                    </div>
+                    <div class="message-actions">
+                        <button 
+                            class="btn-approve"
+                            onclick="approveMessage(${msg.id})">
+                            ✓ Approve
+                        </button>
+                        <button 
+                            class="btn-reject"
+                            onclick="rejectMessage(${msg.id})">
+                            ✗ Reject
+                        </button>
+                    </div>
+                </div>
+            `
+    )
+    .join("");
+}
+
+function escapeHtml(unsafe) {
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
