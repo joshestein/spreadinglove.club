@@ -60,7 +60,7 @@ async function loadPendingMessages() {
     });
 
     if (response.status === 401) {
-      throw new Error("Unauthorized");
+      throw new Error("Invalid credentials");
     }
 
     if (!response.ok) {
