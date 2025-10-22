@@ -1,5 +1,26 @@
 let credentials = null;
 
+async function authenticatedFetch(url, options = {}) {
+    const response = await fetch(url, {
+        ...options,
+        headers: {
+            ...options.headers,
+            'Authorization': 'Basic ' + credentials
+        }
+    });
+    
+    // Handle unauthorized
+    if (response.status === 401) {
+        throw new Error('Unauthorized');
+    }
+    
+    if (!response.ok) {
+        throw new Error(`Request failed: ${response.status}`);
+    }
+    
+    return response;
+}
+
 document.getElementById("refresh").addEventListener("click", loadPendingMessages)
 
 document.getElementById("login-form").addEventListener("submit", async (e) => {
@@ -13,24 +34,11 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
   loginButton.disabled = true;
   loginButton.textContent = "Logging in...";
   loginError.classList.add("hidden");
+ 
 
   try {
     credentials = btoa(username + ":" + password);
-
-    // Test credentials by fetching pending messages
-    const response = await fetch("/api/admin/pending", {
-      headers: {
-        Authorization: `Basic ${credentials}`,
-      },
-    });
-
-    if (response.status === 401) {
-      throw new Error("Invalid credentials");
-    }
-
-    if (!response.ok) {
-      throw new Error("Login failed");
-    }
+    const response = await authenticatedFetch('/api/admin/pending');
 
     document.getElementById("login-form").classList.add("hidden");
     document.getElementById("admin-app").classList.remove("hidden");
@@ -40,7 +48,7 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
   } catch (error) {
     credentials = null;
     loginError.textContent =
-      error.message === "Invalid credentials"
+      error.message === "Unauthorized"
         ? "Invalid username or password"
         : "Login failed. Please try again.";
     loginError.classList.remove("hidden");
@@ -51,20 +59,7 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
 
 async function loadPendingMessages() {
   try {
-    const response = await fetch("/api/admin/pending", {
-      headers: {
-        Authorization: "Basic " + credentials,
-      },
-    });
-
-    if (response.status === 401) {
-      throw new Error("Invalid credentials");
-    }
-
-    if (!response.ok) {
-      throw new Error("Failed to load messages");
-    }
-
+    const response = await authenticatedFetch('/api/admin/pending');
     const messages = await response.json();
     displayMessages(messages);
   } catch (error) {
