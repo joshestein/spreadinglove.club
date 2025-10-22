@@ -30,7 +30,6 @@ button#refresh {
   background: transparent;
   border: none;
   color: #4b4b4b;
-  margin-top: 1rem;
 }
 
 .nav {
@@ -55,6 +54,7 @@ button#refresh {
 
 h1 {
   color: #ac4518;
+  margin-bottom: 1rem;
 }
 
 p {
