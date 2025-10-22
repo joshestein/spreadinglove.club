@@ -34,6 +34,13 @@ type MessageResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+type PendingMessageResponse struct {
+	ID        int64     `json:"id"`
+	Content   string    `json:"content"`
+	Status    string    `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
 func main() {
 	app := &App{}
 
@@ -60,6 +67,11 @@ func main() {
 	r.Route("/api", func(r chi.Router) {
 		r.Get("/message", app.handleGetRandomMessage)
 		r.Post("/message", app.handleSubmitMessage)
+
+		r.Route("/admin", func(r chi.Router) {
+			r.Use(basicAuth)
+			r.Get("/pending", app.handleGetPendingMessages)
+		})
 	})
 
 	server := &http.Server{
@@ -101,6 +113,25 @@ func (app *App) setupDB() (*sql.DB, error) {
 	// Setup DB from `schema.sql`
 	_, err = database.Exec(schemaSQL)
 	return database, err
+}
+
+func basicAuth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		username, password, ok := r.BasicAuth()
+		validUser := os.Getenv("ADMIN_USER")
+		validPass := os.Getenv("ADMIN_PASSWORD")
+
+		if validUser == "" || validPass == "" {
+			log.Fatal("ADMIN_USER and ADMIN_PASSWORD must be set")
+		}
+
+		if !ok || username != validUser || password != validPass {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 func (app *App) handleGetRandomMessage(w http.ResponseWriter, r *http.Request) {
@@ -148,4 +179,31 @@ func (app *App) handleSubmitMessage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (app *App) handleGetPendingMessages(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	msgs, err := app.queries.ListPendingMessages(ctx)
+
+	if err != nil {
+		log.Printf("Error fetching pending messages: %v", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	response := make([]PendingMessageResponse, len(msgs))
+
+	for i, msg := range msgs {
+		response[i] = PendingMessageResponse{
+			ID:      msg.ID,
+			Content: msg.Content,
+			Status:  msg.Status.String,
+		}
+
+		if msg.CreatedAt.Valid {
+			response[i].CreatedAt = msg.CreatedAt.Time
+		}
+	}
+
+	render.JSON(w, r, response)
 }
