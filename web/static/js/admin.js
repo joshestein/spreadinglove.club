@@ -5,7 +5,7 @@ document.getElementById("login-form").addEventListener("submit", async (e) => {
 
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
-  const loginButton = document.getElementById("login-button");
+  const loginButton = document.getElementById("login-btn");
   const loginError = document.getElementById("login-error");
 
   loginButton.disabled = true;
