@@ -73,7 +73,7 @@ func main() {
 			r.Use(basicAuth)
 			r.Get("/pending", app.handleGetPendingMessages)
 			r.Post("/approve/{id}", app.handleApproveMessage)
-			// r.Post("/reject/{id}", app.handleRejectMessage)
+			r.Post("/reject/{id}", app.handleRejectMessage)
 		})
 	})
 
@@ -271,6 +271,41 @@ func (app *App) handleApproveMessage(w http.ResponseWriter, r *http.Request) {
 	// Commit transaction
 	if err := tx.Commit(); err != nil {
 		log.Printf("Error committing transaction: %v", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func (app *App) handleRejectMessage(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+
+	id, err := strconv.ParseInt(chi.URLParam(r, "id"), 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid message ID", http.StatusBadRequest)
+		return
+	}
+
+	// (1) Get pending message
+	pendingMsg, err := app.queries.GetPendingMessage(ctx, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			http.Error(w, "Message not found", http.StatusNotFound)
+			return
+		}
+		log.Printf("Error fetching pending message: %v", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	// (2) Mark pending message as 'rejected'
+	err = app.queries.UpdatePendingMessageStatus(ctx, db.UpdatePendingMessageStatusParams{
+		ID:     pendingMsg.ID,
+		Status: "rejected",
+	})
+	if err != nil {
+		log.Printf("Error updating message: %v", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
