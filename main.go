@@ -173,6 +173,11 @@ func (app *App) handleSubmitMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if len(content) > 5000 {
+		http.Error(w, "Message too long", http.StatusBadRequest)
+		return
+	}
+
 	ctx := r.Context()
 	_, err := app.queries.CreatePendingMessage(ctx, content)
 
