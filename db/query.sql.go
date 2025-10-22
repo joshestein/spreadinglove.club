@@ -7,7 +7,6 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createMessage = `-- name: CreateMessage :one
@@ -105,16 +104,16 @@ func (q *Queries) ListPendingMessages(ctx context.Context) ([]PendingMessage, er
 
 const updatePendingMessageStatus = `-- name: UpdatePendingMessageStatus :exec
 UPDATE pending_messages 
-SET status = ?
-WHERE id = ?
+SET status = ?2
+WHERE id = ?1
 `
 
 type UpdatePendingMessageStatusParams struct {
-	Status sql.NullString `json:"status"`
-	ID     int64          `json:"id"`
+	ID     int64  `json:"id"`
+	Status string `json:"status"`
 }
 
 func (q *Queries) UpdatePendingMessageStatus(ctx context.Context, arg UpdatePendingMessageStatusParams) error {
-	_, err := q.db.ExecContext(ctx, updatePendingMessageStatus, arg.Status, arg.ID)
+	_, err := q.db.ExecContext(ctx, updatePendingMessageStatus, arg.ID, arg.Status)
 	return err
 }

@@ -27,5 +27,5 @@ RETURNING id;
 
 -- name: UpdatePendingMessageStatus :exec
 UPDATE pending_messages 
-SET status = ?
-WHERE id = ?;
+SET status = ?2
+WHERE id = ?1;
