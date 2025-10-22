@@ -36,8 +36,8 @@ transfer, since it cannot be password protected:
 
 ## TODO
 
-- [ ] submit message
-- [ ] admin panel
-- [ ] ability to mark pending messages as qualified to move into actual messages
-- [ ] QR code generation
+- [x] submit message
+- [x] admin panel
+- [x] ability to mark pending messages as qualified to move into actual messages
+- [x] QR code generation
 - [ ] printing
