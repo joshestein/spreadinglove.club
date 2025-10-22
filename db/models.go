@@ -15,8 +15,8 @@ type Message struct {
 }
 
 type PendingMessage struct {
-	ID        int64          `json:"id"`
-	Content   string         `json:"content"`
-	Status    sql.NullString `json:"status"`
-	CreatedAt sql.NullTime   `json:"created_at"`
+	ID        int64        `json:"id"`
+	Content   string       `json:"content"`
+	Status    string       `json:"status"`
+	CreatedAt sql.NullTime `json:"created_at"`
 }

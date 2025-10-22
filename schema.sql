@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS messages (
 CREATE TABLE IF NOT EXISTS pending_messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     content TEXT NOT NULL,
-    status TEXT DEFAULT 'pending' CHECK(status IN ('pending', 'approved', 'rejected')),
+    status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'approved', 'rejected')),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
