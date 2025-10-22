@@ -197,7 +197,7 @@ func (app *App) handleGetPendingMessages(w http.ResponseWriter, r *http.Request)
 		response[i] = PendingMessageResponse{
 			ID:      msg.ID,
 			Content: msg.Content,
-			Status:  msg.Status.String,
+			Status:  msg.Status,
 		}
 
 		if msg.CreatedAt.Valid {
