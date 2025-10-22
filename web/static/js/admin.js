@@ -1,5 +1,7 @@
 let credentials = null;
 
+document.getElementById("refresh").addEventListener("click", loadPendingMessages)
+
 document.getElementById("login-form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
