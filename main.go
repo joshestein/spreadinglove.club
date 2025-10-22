@@ -233,8 +233,19 @@ func (app *App) handleApproveMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Use transaction for atomicity
+	tx, err := app.db.Begin()
+	if err != nil {
+		log.Printf("Error starting transaction: %v", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	defer tx.Rollback()
+
+	qtx := app.queries.WithTx(tx)
+
 	// (2) Copy message into 'messages' table
-	_, err = app.queries.CreateMessage(ctx, pendingMsg.Content)
+	_, err = qtx.CreateMessage(ctx, pendingMsg.Content)
 	if err != nil {
 		log.Printf("Error creating message: %v", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -242,12 +253,19 @@ func (app *App) handleApproveMessage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// (3) Mark pending message as 'approved'
-	err = app.queries.UpdatePendingMessageStatus(ctx, db.UpdatePendingMessageStatusParams{
+	err = qtx.UpdatePendingMessageStatus(ctx, db.UpdatePendingMessageStatusParams{
 		ID:     pendingMsg.ID,
 		Status: "approved",
 	})
 	if err != nil {
 		log.Printf("Error updating message: %v", err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	// Commit transaction
+	if err := tx.Commit(); err != nil {
+		log.Printf("Error committing transaction: %v", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
