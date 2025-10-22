@@ -54,6 +54,9 @@ button#refresh {
 
 h1 {
   color: #ac4518;
+}
+
+h1#message {
   margin-bottom: 1rem;
 }
 
