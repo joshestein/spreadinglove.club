@@ -23,6 +23,13 @@ Restart=always
 WantedBy=multi-user.target
 ```
 
+Start:
+
+```sh
+sudo systemctl daemon-reload
+sudo systemctl enable spreadlove.service --now
+```
+
 Also ensure that you can execute `systemctl restart spreadlove.service` without SUDO:
 
 1. `sudo EDITOR=vim visudo`
