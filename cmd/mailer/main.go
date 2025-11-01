@@ -1,14 +1,35 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"net/smtp"
 	"os"
 
 	_ "github.com/joho/godotenv/autoload"
+
+	"spreadlove/internal/database"
 )
 
 func main() {
+	db, queries, err := database.Setup("./love.db")
+	if err != nil {
+		log.Fatal("Failed to setup database:", err)
+	}
+	defer db.Close()
+
+	ctx := context.Background()
+	msgs, err := queries.ListPendingMessages(ctx)
+	if err != nil {
+		log.Fatal("Error fetching pending messages:", err)
+	}
+
+	if len(msgs) == 0 {
+		fmt.Println("No pending messages to review")
+		return
+	}
+
 	from := os.Getenv("EMAIL_SENDER")
 	recipient := os.Getenv("EMAIL_RECIPIENT")
 	password := os.Getenv("EMAIL_PASSWORD")
