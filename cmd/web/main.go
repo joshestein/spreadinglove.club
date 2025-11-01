@@ -20,10 +20,8 @@ import (
 	"github.com/go-chi/render"
 
 	"spreadlove/db"
+	sqlFiles "spreadlove/sql"
 )
-
-//go:embed sql/schema.sql
-var schemaSQL string
 
 type App struct {
 	db      *sql.DB
@@ -115,7 +113,7 @@ func (app *App) setupDB() error {
 	app.queries = db.New(database)
 
 	// Setup DB from `schema.sql`
-	_, err = database.Exec(schemaSQL)
+	_, err = database.Exec(sqlFiles.SchemaSQL)
 	return err
 }
 
