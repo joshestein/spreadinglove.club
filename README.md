@@ -41,10 +41,33 @@ You will also need to add necessary secrets to GH secrets. Better to generate a 
 transfer, since it cannot be password protected:
 <https://github.com/easingthemes/ssh-deploy?tab=readme-ov-file#configuration>
 
+## Email setup
+
+- [x] DNS
+- [x] Program to write email
+- [x] Systemd timer to email every day
+
+First, create a similar systemd service to the one above for `cmd/mailer/main.go`
+
+Then, create a systemd timer:
+
+```ini
+[Unit]
+Description=Run mailer every day at 13
+
+[Timer]
+OnCalendar=*-*-* 13:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+```
+
 ## TODO
 
 - [x] submit message
 - [x] admin panel
 - [x] ability to mark pending messages as qualified to move into actual messages
 - [x] QR code generation
-- [ ] printing
+- [x] printing
+- [x] email with pending messages
