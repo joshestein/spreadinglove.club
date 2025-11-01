@@ -22,7 +22,7 @@ import (
 	"spreadlove/db"
 )
 
-//go:embed schema.sql
+//go:embed sql/schema.sql
 var schemaSQL string
 
 type App struct {
