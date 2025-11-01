@@ -13,14 +13,13 @@ import (
 	"time"
 
 	_ "github.com/joho/godotenv/autoload"
-	_ "github.com/mattn/go-sqlite3"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
 
 	"spreadlove/db"
-	sqlFiles "spreadlove/sql"
+	"spreadlove/internal/database"
 )
 
 type App struct {
@@ -104,17 +103,15 @@ func main() {
 }
 
 func (app *App) setupDB() error {
-	database, err := sql.Open("sqlite3", "./love.db")
+	database, queries, err := database.Setup("./love.db")
 	if err != nil {
 		return err
 	}
 
 	app.db = database
-	app.queries = db.New(database)
+	app.queries = queries
 
-	// Setup DB from `schema.sql`
-	_, err = database.Exec(sqlFiles.SchemaSQL)
-	return err
+	return nil
 }
 
 func basicAuth(next http.Handler) http.Handler {
