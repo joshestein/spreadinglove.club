@@ -54,7 +54,7 @@ jobs:
         with:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           ARGS: "-zv --delete"
-          SOURCE: "."
+          SOURCE: "./"
           TARGET: /home/${{ secrets.VPS_USER }}/spreadlove
           REMOTE_HOST: ${{ secrets.VPS_HOST }}
           REMOTE_USER: ${{ secrets.VPS_USER }}
