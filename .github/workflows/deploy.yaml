@@ -25,7 +25,7 @@ jobs:
           mkdir -p dist
           cp -r bin dist/
           cp -r web dist/
-          echo ${ENV_FILE} | base64 --decode > dist/.env
+          echo "${{ secrets.ENV_FILE }}" | base64 --decode > dist/.env
         env:
           GOOS: linux
           GOARCH: amd64
