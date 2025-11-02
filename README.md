@@ -47,7 +47,8 @@ transfer, since it cannot be password protected:
 - [x] Program to write email
 - [x] Systemd timer to email every day
 
-First, create a similar systemd service to the one above for `cmd/mailer/main.go`
+First, create a similar systemd service to the one above for `cmd/mailer/main.go`. Change `Type=oneshot` and don't set
+`Restart` directive.
 
 Then, create a systemd timer:
 
